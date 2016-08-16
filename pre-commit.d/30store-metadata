@@ -26,6 +26,19 @@ filter_ignore() {
 	fi
 }
 
+# filters files and directories (removes symlinks etc.)
+filter_file_or_directory()
+{
+	while read line
+	do
+		if [ -f "$line" -a ! -L "$line" ]
+		then
+			echo "$line"
+		fi
+	done
+	find $NOVCS -type d -print | sed -r -e 's:^\./::'
+}
+
 shellquote() {
 	# Single quotes text, escaping existing single quotes.
 	sed -e "s/'/'\"'\"'/g" -e "s/^/'/" -e "s/$/'/"
@@ -70,7 +83,12 @@ generate_metadata() {
  
 	# Store things that don't have the default user or group.
 	# Store all file modes, in case the user has an unusual umask.
-	find $NOVCS \( -type f -or -type d \) -print | filter_ignore | sort | perl -ne '
+	if [ ${ONLY_VCS_FILES:-0} = 0 ]
+	then
+		find $NOVCS \( -type f -or -type d \) -print | filter_ignore | sort
+	else
+		git ls-files | filter_file_or_directory | sort -u
+	fi | perl -ne '
 		BEGIN { $q=chr(39) }
 		sub uidname {
 			my $want=shift;
