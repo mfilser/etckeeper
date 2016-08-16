@@ -4,23 +4,11 @@ set -e
 . $ETCKEEPER_CONF_DIR/strategy_init
 
 filter_ignore() {
-	case "$VCS" in
-		darcs) ignorefile=.darcsignore ;;
-		git)   ignorefile=.gitignore ;;
-	esac
+	ignorefile="$(get_ignore_file)"
 
 	if [ -n "$ignorefile" ] && [ -e "$ignorefile" ]; then
 		listfile="$( mktemp -t etckeeper-$VCS.XXXXXXXXXX )"
-		case "$VCS" in
-			darcs)
-				grep -v '^[[:space:]]*\(#\|$\)' "$ignorefile" > "$listfile" || true
-				grep -Evf "$listfile"
-				;;
-			git)
-				(git ls-files -oi --exclude-standard; git ls-files -oi --exclude-standard --directory) | sort | uniq > "$listfile" || true
-				sed 's/^\.\///' | grep -xFvf "$listfile"
-				;;
-		esac
+		filter_ignorefile
 		rm -f "$listfile"
 		unset listfile
 	else
@@ -67,22 +55,9 @@ generate_metadata() {
 	LC_COLLATE=C
 	export LC_COLLATE
 
-	if [ "$VCS" = git ] || [ "$VCS" = hg ]; then
-		# These version control systems do not track directories,
-		# so empty directories must be stored specially.
-		find $NOVCS -type d -empty -print |
-			sort | shellquote | sed -e "s/^/mkdir -p /"
-	fi
+	add_empty_directories
+	add_symlinks
 
-	if [ "$VCS" = darcs ]; then
-		# This version control system does not track symlinks,
-		# so they must be stored specially.
-		find $NOVCS -type l -print | sort | filter_ignore | while read link; do
-			dest=$( readlink "$link" )
-			printf "ln -sf '%s' '%s'\n" "$(echo "$dest" | shellquote)" "$(echo "$link" | shellquote)"
-		done
-	fi
- 
 	# Store things that don't have the default user or group.
 	# Store all file modes, in case the user has an unusual umask.
 	if [ ${ONLY_VCS_FILES:-0} = 0 ]
@@ -151,10 +126,7 @@ if [ "$VCS" = git ] || [ "$VCS" = hg ] || [ "$VCS" = bzr ] || [ "$VCS" = darcs ]
 	generate_metadata >> .etckeeper
 
 	# stage the file as part of the current commit
-	if [ "$VCS" = git ]; then
-		# this will do nothing if the metadata file is unchanged.
-		git add .etckeeper
-	fi
 	# hg, bzr and darcs add not done, they will automatically
 	# include the file in the current commit
+	add_etckeeper_file
 fi

@@ -1,0 +1,22 @@
+#!/bin/sh
+
+# overwrite darcs specific functions
+
+add_symlinks()
+{
+	find $NOVCS -type l -print | sort | filter_ignore | while read link; do
+		dest=$( readlink "$link" )
+		printf "ln -sf '%s' '%s'\n" "$(echo "$dest" | shellquote)" "$(echo "$link" | shellquote)"
+	done
+}
+
+get_ignore_file()
+{
+	echo ".darcsignore"
+}
+
+filter_ignorefile()
+{
+	grep -v '^[[:space:]]*\(#\|$\)' "$ignorefile" > "$listfile" || true
+	grep -Evf "$listfile"
+}

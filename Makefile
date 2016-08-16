@@ -33,6 +33,9 @@ install: etckeeper.version
 	$(INSTALL_DATA) strategy $(DESTDIR)$(etcdir)/etckeeper/strategy
 	$(INSTALL_DATA) strategy_init $(DESTDIR)$(etcdir)/etckeeper/strategy_init
 	$(INSTALL_DATA) strategy_git $(DESTDIR)$(etcdir)/etckeeper/strategy_git
+	$(INSTALL_DATA) strategy_hg $(DESTDIR)$(etcdir)/etckeeper/strategy_hg
+	$(INSTALL_DATA) strategy_darcs $(DESTDIR)$(etcdir)/etckeeper/strategy_darcs
+	$(INSTALL_DATA) strategy_bzr $(DESTDIR)$(etcdir)/etckeeper/strategy_bzr
 	mkdir -p $(DESTDIR)$(completiondir)
 	$(INSTALL_DATA) bash_completion $(DESTDIR)$(completiondir)/etckeeper
 	mkdir -p $(DESTDIR)$(systemddir)

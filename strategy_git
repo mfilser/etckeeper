@@ -6,3 +6,25 @@ only_vcs_files()
 {
 	git ls-files | filter_file_or_directory | sort -u
 }
+
+add_empty_directories()
+{
+	default_add_empty_directories
+}
+
+add_etckeeper_file()
+{
+	# this will do nothing if the metadata file is unchanged.
+	git add .etckeeper
+}
+
+get_ignore_file()
+{
+	echo ".gitignore"
+}
+
+filter_ignorefile()
+{
+	(git ls-files -oi --exclude-standard; git ls-files -oi --exclude-standard --directory) | sort | uniq > "$listfile" || true
+	sed 's/^\.\///' | grep -xFvf "$listfile"
+}

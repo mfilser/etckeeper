@@ -1,0 +1,8 @@
+#!/bin/sh
+
+# overwrite hg specific functions
+
+add_empty_directories()
+{
+	default_add_empty_directories
+}
