@@ -1,0 +1,14 @@
+#!/bin/sh
+
+strategy_file="$ETCKEEPER_CONF_DIR/strategy"
+if [ -r $strategy_file ]
+then
+	. $strategy_file
+
+	if [ -r ${strategy_file}_$VCS ]
+	then
+		. ${strategy_file}_$VCS
+	fi
+else
+	echo "strategy file not found in $ETCKEEPER_CONF_DIR/strategy"
+fi

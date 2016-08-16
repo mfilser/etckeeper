@@ -1,6 +1,8 @@
 #!/bin/sh
 set -e
 
+. $ETCKEEPER_CONF_DIR/strategy_init
+
 filter_ignore() {
 	case "$VCS" in
 		darcs) ignorefile=.darcsignore ;;
@@ -87,7 +89,7 @@ generate_metadata() {
 	then
 		find $NOVCS \( -type f -or -type d \) -print | filter_ignore | sort
 	else
-		git ls-files | filter_file_or_directory | sort -u
+		only_vcs_files
 	fi | perl -ne '
 		BEGIN { $q=chr(39) }
 		sub uidname {

@@ -1,0 +1,6 @@
+#!/bin/sh
+
+only_vcs_files()
+{
+	find $NOVCS \( -type f -or -type d \) -print | filter_ignore | sort
+}

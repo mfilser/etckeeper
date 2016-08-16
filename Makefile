@@ -30,6 +30,9 @@ install: etckeeper.version
 	$(INSTALL_EXE) etckeeper $(DESTDIR)$(bindir)/etckeeper
 	mkdir -p $(DESTDIR)$(mandir)/man8
 	$(INSTALL_DATA) etckeeper.8 $(DESTDIR)$(mandir)/man8/etckeeper.8
+	$(INSTALL_DATA) strategy $(DESTDIR)$(etcdir)/etckeeper/strategy
+	$(INSTALL_DATA) strategy_init $(DESTDIR)$(etcdir)/etckeeper/strategy_init
+	$(INSTALL_DATA) strategy_git $(DESTDIR)$(etcdir)/etckeeper/strategy_git
 	mkdir -p $(DESTDIR)$(completiondir)
 	$(INSTALL_DATA) bash_completion $(DESTDIR)$(completiondir)/etckeeper
 	mkdir -p $(DESTDIR)$(systemddir)

@@ -1,0 +1,8 @@
+#!/bin/sh
+
+# overwrite git specific functions
+
+only_vcs_files()
+{
+	git ls-files | filter_file_or_directory | sort -u
+}
