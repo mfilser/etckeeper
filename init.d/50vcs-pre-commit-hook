@@ -16,6 +16,20 @@ etckeeper pre-commit -d `pwd`
 EOF
 		chmod +x .git/hooks/pre-commit
 		fi
+		_hook_file=".git/hooks/post-checkout"
+		if [ ! -f $_hook_file ]; then
+			cat > $_hook_file <<EOF
+#!/bin/sh
+etckeeper/init.d/20restore-etckeeper
+EOF
+		fi
+		chmod +x $_hook_file
+		cd .git/hooks
+		for i in post-{applypatch,merge,rewrite}
+		do
+			test -L $i || ln -s post-checkout $i
+		done
+		cd - >/dev/null
 	;;
 	hg)
 		if [ -e .hg/hgrc ] && grep "^\[hooks\]" .hg/hgrc; then
